@@ -95,7 +95,7 @@ class CubicSplineInterpolator:
         return np.array(res)
 
     
-def EulerSolver(x_dot, y_dot, x_0, y_0, T, t_0, h, beta=0):
+def EulerSolver(x_dot, y_dot, x_0, y_0, T, t_0, h, beta=0, y_bound=False):
     
     xs = [x_0]
     ys = [y_0]
@@ -103,7 +103,7 @@ def EulerSolver(x_dot, y_dot, x_0, y_0, T, t_0, h, beta=0):
     y = y_0
     ts = np.arange(t_0, T + 1e-9, h)
     
-    for t in ts[:-1]:
+    for i, t in enumerate(ts[:-1]):
         x_vec = x_dot(x, y, t, beta)
         y_vec = y_dot(x, y, t, beta)
         
@@ -112,6 +112,12 @@ def EulerSolver(x_dot, y_dot, x_0, y_0, T, t_0, h, beta=0):
         
         x = x + x_vec * h
         y = y + y_vec * h
+        
+        if y_bound:
+            if y <= 0:
+                y = 0.0
+            elif y >= 1:
+                y = 1.0
         
         xs.append(x)
         ys.append(y)
